@@ -6,7 +6,7 @@ import { PiLineVerticalThin } from "react-icons/pi";
 
 const Navbar = () => {
   return (
-    <nav className="flex justify-around items-center text-white m-2 p-3 pl-5">
+    <nav className="flex justify-between items-center text-white m-2 p-3 pl-5">
 
       {/* Left Side */}
       <div className="flex items-center gap-4">
@@ -30,13 +30,8 @@ const Navbar = () => {
           <li><PiLineVerticalThin size={30} /></li>
           <li className="flex items-center navbarHover"><GrInstallOption size={15} className="mr-3" />Install App</li>
           <li className="navbarHover">Sign up</li>
+          <li className="text-lg font-semibold border-white rounded-full px-5 py-2 hover:bg-white hover:text-black cursor-pointer transition-all duration-300">Log in</li>
         </ol>
-      </div>
-
-      <div className="flex gap-6 text-lg font-semibold">
-        <div className="border-white rounded-full px-5 py-2 hover:bg-white hover:text-black cursor-pointer transition-all duration-300">
-          <p>Log in</p>
-        </div>
       </div>
     </nav>
   );
