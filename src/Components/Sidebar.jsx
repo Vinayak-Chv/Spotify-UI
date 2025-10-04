@@ -2,7 +2,7 @@ import { FaBook, FaGlobe } from "react-icons/fa";
 
 const Sidebar = () => {
   return (
-    <aside className="w-1/4 bg-[#121212] text-white flex flex-col p-2 font-sans overflow-y-auto h-[90vh]">
+    <aside className="w-[30%] bg-[#121212] text-white flex flex-col p-3 font-sans rounded-lg overflow-y-auto">
       {/* Navigation */}
       <nav className="flex flex-col mb-4">
         <a
@@ -14,7 +14,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Playlist card */}
-      <div className="bg-[#242424] rounded-lg p-4 m-2 flex flex-col gap-3">
+      <div className="bg-[#242424] rounded-lg p-4 mb-3 flex flex-col gap-3">
         <h3 className="text-base font-extrabold">Create your first playlist</h3>
         <p className="text-sm text-[#ebebeb] font-semibold">
           It's easy, we'll help you
@@ -25,7 +25,7 @@ const Sidebar = () => {
       </div>
 
       {/* Podcast card */}
-      <div className="bg-[#242424] rounded-lg p-4 m-2 flex flex-col gap-3">
+      <div className="bg-[#242424] rounded-lg p-4 mb-3 flex flex-col gap-3">
         <h3 className="text-base font-extrabold">
           Let’s find some podcasts to follow
         </h3>

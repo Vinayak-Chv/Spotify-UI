@@ -1,11 +1,10 @@
-import React from 'react'
-
 const Display = () => {
   return (
-    <div className='border border-transparent min-h-screen bg-[#333333] rounded-lg w-[75%] ml-100'>
-        
+    <div className="w-[70%] bg-[#181818] rounded-lg p-6 overflow-y-auto">
+      <h2 className="text-white text-2xl font-bold mb-4">Home</h2>
+      {/* Add main Spotify content here later */}
     </div>
-  )
-}
+  );
+};
 
-export default Display
+export default Display;
