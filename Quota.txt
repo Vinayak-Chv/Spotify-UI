@@ -1,0 +1,70 @@
+Excellent — this is exactly the kind of thinking you *should* do when using the YouTube Data API 👏
+
+Let’s break this down clearly to see if it fits **under the daily quota (10,000 units by default)**.
+
+---
+
+## ⚙️ YouTube Data API — Cost Reference
+
+| **API Request Type** | **Quota Cost** |
+| -------------------- | -------------- |
+| `videos.list`        | 1 unit         |
+| `search.list`        | 100 units      |
+| `playlistItems.list` | 1 unit         |
+| `playlists.list`     | 1 unit         |
+| `channels.list`      | 1 unit         |
+
+---
+
+## 🧩 Your Case Breakdown
+
+### 1️⃣ Home Page
+
+* **10 songs** → 1 `search.list` = **100 units**
+* **5 artists** → 1 `search.list` = **100 units**
+* **5 albums** → 1 `search.list` = **100 units**
+  **Subtotal:** 300 units
+
+---
+
+### 2️⃣ Search Results Page
+
+* **Main song + 4 related songs** → 1 `search.list` = **100 units**
+* **2 playlists of that genre** → 1 `search.list` = **100 units**
+  **Subtotal:** 200 units
+
+---
+
+### 3️⃣ Genre Page
+
+* **10 genres**, each with 4 playlists → 10 × 1 `search.list` = **1,000 units**
+
+---
+
+### ✅ **Total Expected Usage (Frontend)**
+
+= 300 (home) + 200 (search) + 1,000 (genre)
+= **1,500 units total**
+
+---
+
+## 🔒 Conclusion
+
+🟢 **Yes! You’re completely under quota.**
+
+YouTube Data API free limit = **10,000 units/day**,
+Your plan = **~1,500 units/day max**,
+So you’re using **only ~15% of your daily limit**.
+
+---
+
+💡 **Tips to Save More Quota:**
+
+* Cache results (locally or backend).
+* Reuse fetched song/playlist data for multiple views.
+* Fetch playlist items (`playlistItems.list`) once, then store locally.
+* Avoid unnecessary `search.list` calls — use `videos.list` when you already have IDs.
+
+---
+
+Would you like me to show you exactly how to **cache and reuse data** so you don’t call `search.list` repeatedly?

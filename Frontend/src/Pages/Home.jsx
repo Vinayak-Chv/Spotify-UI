@@ -1,7 +1,9 @@
 import Navbar from "../Components/Navbar";
 import Display from "../Components/Display";
 import Sidebar from "../Components/Sidebar";
-import PlaylistDisplay from "../Components/PlaylistDisplay";
+import Playlist from "../Components/Playlist";
+import Player from "../Components/Player";
+import Results from "../Components/Results";
 
 const Home = () => {
   return (
@@ -12,7 +14,8 @@ const Home = () => {
       {/* Sidebar + Main Section */}
       <div className="flex flex-row justify-between gap-4 p-3 h-[90vh]">
         <Sidebar />
-        <PlaylistDisplay />
+        <Display />
+        <Player />
       </div>
     </div>
   );

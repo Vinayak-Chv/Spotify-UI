@@ -1,9 +1,9 @@
 import { FaPlay } from "react-icons/fa";
 
-const PlaylistDisplay = () => {
+const Album = () => {
   return (
     <div className="w-[70%] bg-[#181818] rounded-lg p-6 overflow-y-auto custom-scrollbar">
-      {/* Playlist/Artist Header */}
+      {/* Album/Artist Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           {/* Cover Image Placeholder */}
@@ -11,7 +11,7 @@ const PlaylistDisplay = () => {
 
           {/* Title and Artist */}
           <div className="flex flex-col gap-1">
-            <h2 className="text-white text-2xl font-bold">Playlist / Artist Name</h2>
+            <h2 className="text-white text-2xl font-bold">Album / Artist Name</h2>
             <p className="text-[#b3b3b3] text-sm">Creator / Artist</p>
           </div>
         </div>
@@ -51,4 +51,4 @@ const PlaylistDisplay = () => {
   );
 };
 
-export default PlaylistDisplay;
+export default Album;
