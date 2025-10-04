@@ -5,12 +5,9 @@ const Sidebar = () => {
     <aside className="w-[30%] bg-[#121212] text-white flex flex-col p-3 font-sans rounded-lg overflow-y-auto">
       {/* Navigation */}
       <nav className="flex flex-col mb-4">
-        <a
-          href="#"
-          className="text-[#b3b3b3] no-underline px-4 py-2 rounded flex items-center gap-3 font-bold hover:text-white hover:bg-[#242424] transition-all"
-        >
+        <div className="text-[#] no-underline px-4 py-2 rounded flex items-center gap-3 font-bold">
           <FaBook size={18} /> Your Library
-        </a>
+        </div>
       </nav>
 
       {/* Playlist card */}
@@ -58,7 +55,7 @@ const Sidebar = () => {
       </div>
 
       {/* Language button */}
-      <button className="m-4 px-3 py-1 border border-[#b3b3b3] rounded-full bg-none text-white text-sm flex items-center gap-2 hover:border-white transition-colors">
+      <button className="m-4 px-2 py-1 border border-[#b3b3b3] rounded-full bg-none text-white text-sm flex items-center gap-2 hover:border-white transition-colors">
         <FaGlobe size={14} /> English
       </button>
     </aside>
