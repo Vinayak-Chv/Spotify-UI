@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getPlaylist, getVideo } from "../api/youtube"; // ✅ use your API helpers
+import { getPlaylist, getVideo } from "../api/youtube";
 
 const SongContext = createContext();
 
@@ -12,90 +12,99 @@ export const SongProvider = ({ children }) => {
   const [albumSong, setAlbumSong] = useState([]);
   const [albumData, setAlbumData] = useState({});
 
-  // Fetch a single song by videoId
   const fetchSingleSong = async () => {
     if (!selectedSong) return;
     try {
       const data = await getVideo(selectedSong);
-      let lyrics = "Lyrics not found";
-      setSong({ ...data, lyrics });
+      if (!data) {
+        setSong(null);
+        return;
+      }
+      setSong({ ...data, lyrics: "Lyrics not found" });
     } catch (err) {
       console.error("Failed to fetch single song", err);
+      setSong(null);
     }
   };
 
-  // Fetch playlist for album page
   const fetchAlbumSong = async (playlistId) => {
     try {
-      const data = await getPlaylist(playlistId);
-      setAlbumSong(data);
+      const data = (await getPlaylist(playlistId)) || [];
+      const filteredData = data.filter(s => s?.thumbnail);
+      setAlbumSong(filteredData);
 
-      if (data.length > 0) {
+      if (filteredData.length > 0) {
         setAlbumData({
-          title: "Playlist",
+          title: filteredData[0].playlistTitle || "Playlist",
           description: "YouTube Playlist",
-          thumbnail: data[0].thumbnail,
+          thumbnail: filteredData[0].thumbnail,
         });
-        setSelectedSong(data[0].videoId);
+        setSelectedSong(filteredData[0].videoId);
         setIsPlaying(false);
+      } else {
+        setAlbumData({});
+        setSelectedSong(null);
       }
     } catch (err) {
       console.error("Failed to fetch album playlist", err);
+      setAlbumSong([]);
+      setAlbumData({});
+      setSelectedSong(null);
     }
   };
 
-  // Fetch multiple playlists (for Home page)
   const fetchPlaylists = async (playlistIds, type) => {
     try {
       const allVideos = [];
+
       for (let id of playlistIds) {
-        const data = await getPlaylist(id); // ✅ fixed
+        const data = (await getPlaylist(id)) || [];
+        const filteredData = data.filter(s => s?.thumbnail);
 
         if (type === "albums") {
-          setAlbums((prev) => {
-            const exists = prev.find((a) => a.playlistId === id);
-            if (exists) return prev;
-            return [
-              ...prev,
-              {
-                playlistId: id,
-                title: data[0]?.title || "Untitled Album",
-                artist: data[0]?.artist || "Unknown Artist",
-                thumbnail: data[0]?.thumbnail,
-              },
-            ];
-          });
+          if (filteredData.length > 0) {
+            setAlbums(prev => {
+              const exists = prev.find(a => a.playlistId === id);
+              if (exists) return prev;
+              return [
+                ...prev,
+                {
+                  playlistId: id,
+                  title: filteredData[0].playlistTitle || "Untitled Album",
+                  artist: filteredData[0].artist || "Unknown Artist",
+                  thumbnail: filteredData[0].thumbnail,
+                },
+              ];
+            });
+          }
         } else {
-          allVideos.push(...data);
+          allVideos.push(...filteredData);
         }
       }
 
-      if (type === "songs") {
+      if (type === "songs" && allVideos.length > 0) {
         setSongs(allVideos);
-
-        if (allVideos.length > 0) {
-          setSelectedSong(allVideos[0].videoId);
-          setIsPlaying(false);
-        }
+        setSelectedSong(allVideos[0]?.videoId || null);
+        setIsPlaying(false);
       }
     } catch (err) {
       console.error("Failed to fetch playlists", err);
     }
   };
 
-  // Player controls
   const nextMusic = () => {
-    const currentIndex = songs.findIndex((s) => s.videoId === selectedSong);
+    if (!songs.length || !selectedSong) return;
+    const currentIndex = songs.findIndex(s => s.videoId === selectedSong);
     const nextIndex = currentIndex === songs.length - 1 ? 0 : currentIndex + 1;
-    setSelectedSong(songs[nextIndex]?.videoId);
+    setSelectedSong(songs[nextIndex]?.videoId || null);
   };
 
   const prevMusic = () => {
-    const currentIndex = songs.findIndex((s) => s.videoId === selectedSong);
-    if (currentIndex > 0) setSelectedSong(songs[currentIndex - 1]?.videoId);
+    if (!songs.length || !selectedSong) return;
+    const currentIndex = songs.findIndex(s => s.videoId === selectedSong);
+    if (currentIndex > 0) setSelectedSong(songs[currentIndex - 1]?.videoId || null);
   };
 
-  // Refetch single song whenever selectedSong changes
   useEffect(() => {
     fetchSingleSong();
   }, [selectedSong]);

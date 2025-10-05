@@ -5,7 +5,7 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Playlist from "./Components/Playlist";
-import Album from "./Pages/Album";
+import Album from "./Components/Album";
 
 const App = () => {
   const { loading, isAuth, user } = UserData();

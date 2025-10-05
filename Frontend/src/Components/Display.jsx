@@ -1,25 +1,45 @@
 import { FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { searchVideos } from "../api/youtube"; // frontend API
+import { getPlaylist, getPlaylistInfo } from "../api/youtube";
+import { useNavigate } from "react-router-dom";
 
 const Display = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [topArtists, setTopArtists] = useState([]);
   const [popularAlbums, setPopularAlbums] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch trending songs (example query)
-      const songs = await searchVideos("top hits");
-      setTrendingSongs(songs);
+      try {
+        const TRENDING_ID = "RDCLAK5uy_ly0ZHQ7uutQ76YAUjYks4rEG9dOhL9Rfw";
+        const ARTIST_ID = "PL8fVUTBmJhHJmpP7bhE4GIr5Y2kOxV2rY";
+        const ALBUM_IDS = [
+          "RDCLAK5uy_nmS3YoxSwVVQk9lEQJ0UX4ZCjXsW_psU8",
+          "RDCLAK5uy_mjFIQx6np0uEk0EFQnkGFxqR3OMxReYv0",
+          "RDCLAK5uy_nLOvZAnN86K4f-fJ6tUi0xHUPBHLBBkVE"
+        ];
 
-      // Fetch top artists (example query)
-      const artists = await searchVideos("top artists");
-      setTopArtists(artists);
+        // Fetch trending & artist playlists safely
+        const trending = (await getPlaylist(TRENDING_ID)) || [];
+        const artists = (await getPlaylist(ARTIST_ID)) || [];
 
-      // Fetch popular albums/singles (example query)
-      const albums = await searchVideos("popular albums");
-      setPopularAlbums(albums);
+        const filteredTrending = trending.filter(song => song?.thumbnail).slice(0, 10);
+        const filteredArtists = artists.filter(song => song?.thumbnail).slice(0, 10);
+
+        // Fetch album info safely
+        const albums = [];
+        for (let id of ALBUM_IDS) {
+          const info = await getPlaylistInfo(id);
+          if (info && info.thumbnail) albums.push(info);
+        }
+
+        setTrendingSongs(filteredTrending);
+        setTopArtists(filteredArtists);
+        setPopularAlbums(albums);
+      } catch (err) {
+        console.error("Error fetching display data:", err);
+      }
     };
 
     fetchData();
@@ -30,51 +50,66 @@ const Display = () => {
       key={song.videoId}
       className="relative bg-[#242424] rounded-lg p-4 cursor-pointer hover:bg-[#2a2a2a] transition-all group min-w-[160px] snap-start"
     >
-      {/* Image */}
       <div className="w-full aspect-square rounded-md overflow-hidden mb-3 relative">
         <img
-          src={song.thumbnail}
-          alt={song.title}
+          src={song.thumbnail || "/fallback-song.png"}
+          alt={song.title || "Unknown Song"}
           className="w-full h-full object-cover"
         />
         <button className="absolute bottom-2 right-2 bg-[#1db954] text-black p-3 rounded-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[-4px] transition-all duration-300">
           <FaPlay size={16} />
         </button>
       </div>
+      <h3 className="text-white text-sm font-semibold truncate">{song.title || "Unknown Title"}</h3>
+      <p className="text-[#b3b3b3] text-xs truncate">{song.channelTitle || "Unknown Artist"}</p>
+    </div>
+  );
 
-      {/* Song Info */}
-      <h3 className="text-white text-sm font-semibold truncate">{song.title}</h3>
-      <p className="text-[#b3b3b3] text-xs truncate">
-        {song.channelTitle || "Unknown Artist"}
-      </p>
+  const renderAlbumCard = (album) => (
+    <div
+      key={album.id}
+      className="relative bg-[#242424] rounded-lg p-4 cursor-pointer hover:bg-[#2a2a2a] transition-all group min-w-[160px] snap-start"
+      onClick={() => album.id && navigate(`/album/${album.id}`)}
+    >
+      <div className="w-full aspect-square rounded-md overflow-hidden mb-3 relative">
+        <img
+          src={album.thumbnail || "/fallback-album.png"}
+          alt={album.title || "Unknown Album"}
+          className="w-full h-full object-cover"
+        />
+        <button className="absolute bottom-2 right-2 bg-[#1db954] text-black p-3 rounded-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[-4px] transition-all duration-300">
+          <FaPlay size={16} />
+        </button>
+      </div>
+      <h3 className="text-white text-sm font-semibold truncate">{album.title || "Unknown Album"}</h3>
     </div>
   );
 
   return (
-    <div className="w-[70%] bg-[#181818] rounded-lg p-6 overflow-y-auto custom-scrollbar">
+    <div className="w-[70%] mb-5 bg-[#181818] rounded-lg p-6 overflow-y-auto custom-scrollbar">
       {/* Trending Songs */}
-      <div>
+      <section>
         <h2 className="text-white text-2xl font-bold mb-6">Trending Songs</h2>
-      </div>
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth custom-scrollbar">
-        {trendingSongs.map(renderSongCard)}
-      </div>
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth custom-scrollbar">
+          {trendingSongs.length ? trendingSongs.map(renderSongCard) : <p className="text-white">No trending songs available.</p>}
+        </div>
+      </section>
 
       {/* Top Artists */}
-      <div className="mt-10">
+      <section className="mt-10">
         <h2 className="text-white text-2xl font-bold mb-6">Top Artists</h2>
         <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth custom-scrollbar">
-          {topArtists.map(renderSongCard)}
+          {topArtists.length ? topArtists.map(renderSongCard) : <p className="text-white">No top artists available.</p>}
         </div>
-      </div>
+      </section>
 
-      {/* Popular Albums & Singles */}
-      <div className="mt-10">
-        <h2 className="text-white text-2xl font-bold mb-6">Popular Albums & Singles</h2>
+      {/* Popular Albums */}
+      <section className="mt-10">
+        <h2 className="text-white text-2xl font-bold mb-6">Popular Albums</h2>
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth custom-scrollbar">
-          {popularAlbums.map(renderSongCard)}
+          {popularAlbums.length ? popularAlbums.map(renderAlbumCard) : <p className="text-white">No albums available.</p>}
         </div>
-      </div>
+      </section>
     </div>
   );
 };
