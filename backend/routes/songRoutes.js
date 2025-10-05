@@ -31,21 +31,25 @@ router.get("/playlist/:playlistId", TryCatch(async (req, res) => {
 router.get("/playlist/info/:playlistId", TryCatch(async (req, res) => {
   const playlistId = req.params.playlistId;
 
-  const response = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems", {
+  const response = await axios.get("https://www.googleapis.com/youtube/v3/playlists", {
     params: {
-      part: "snippet,contentDetails",
-      maxResults: 1,
-      playlistId,
+      part: "snippet",
+      id: playlistId,
       key: process.env.YT_API_KEY,
     },
   });
 
   const item = response.data.items[0];
 
+  if (!item) {
+    return res.status(404).json({ message: "Playlist not found" });
+  }
+
   res.json({
     id: playlistId,
-    title: item?.snippet?.title || "Unknown Album",
-    thumbnail: item?.snippet?.thumbnails?.high?.url || "/fallback-album.png",
+    title: item.snippet.title || "Unknown Album",
+    channelTitle: item.snippet.channelTitle || "Unknown Creator",
+    thumbnail: item.snippet.thumbnails?.high?.url || "/fallback-album.png",
   });
 }));
 
